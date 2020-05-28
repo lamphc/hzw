@@ -3,6 +3,8 @@
  */
 
 import axios from 'axios'
+import { Toast } from 'antd-mobile';
+// loading效果组件
 
 // 请求基础地址
 const BASE_URL = 'https://api-haoke-web.itheima.net'
@@ -16,7 +18,9 @@ const myAxios = axios.create({
 // 请求之前触发
 myAxios.interceptors.request.use(function (config) {
   // Do something before request is sent
-  console.log('请求之前触发', config)
+  // console.log('请求之前触发', config)
+  // loading
+  Toast.loading('加载中...', 0);
   return config;
 }, function (error) {
   // Do something with request error
@@ -28,7 +32,9 @@ myAxios.interceptors.request.use(function (config) {
 myAxios.interceptors.response.use(function (response) {
   // Any status code that lie within the range of 2xx cause this function to trigger
   // Do something with response data
-  console.log('请求成功之后', response)
+  // console.log('请求成功之后', response)
+  Toast.hide()
+  // close loading
   // 简化数据
   const data = response.data;
   // 咱们自己需要的数据
