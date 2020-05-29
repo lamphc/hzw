@@ -2,7 +2,7 @@
  * 默认首页
  */
 import React, { Component } from 'react';
-import { Carousel, Flex, Grid, WingBlank } from 'antd-mobile';
+import { Carousel, Flex, Grid, WingBlank, SearchBar } from 'antd-mobile';
 // 导入自己的封装的axios
 import { BASE_URL } from '../../utils/axios';
 import { getSwiper, getGroup, getNews } from '../../utils/api/home';
@@ -22,23 +22,25 @@ class Index extends Component {
     news: [],
     // 控制自动播放
     isPlay: false,
+    // 搜索关键词
+    keyword: '',
     // 轮播图默认高度
     imgHeight: 212,
   }
   componentDidMount() {
-    this.getSwiper();
-    this.getGroup();
-    this.getNews()
+    this.loadAll();
   }
 
-  // 获取轮播图数据
-  getSwiper = async () => {
-    const { status, data } = await getSwiper()
-    // console.log(res)
-    if (status === 200) {
-      // 响应式：修改轮播图的数据 =》异步
+  // 获取首页所有接口数据
+  loadAll = async () => {
+    const [swiper, group, news] = await Promise.all([getSwiper(), getGroup(), getNews()]);
+    console.log('1. 获取首页所有接口数据', swiper, group, news)
+    // 2. 批量做响应式
+    if (swiper.status === 200) {
       this.setState({
-        swiper: data
+        swiper: swiper.data,
+        group: group.data,
+        news: news.data
       }, () => {
         // 轮播图已经有数据了
         this.setState({
@@ -46,27 +48,9 @@ class Index extends Component {
         })
       })
     }
+
   }
 
-  // 获取租房小组的数据
-  getGroup = async () => {
-    const { status, data } = await getGroup();
-    if (status === 200) {
-      this.setState({
-        group: data
-      })
-    }
-  }
-
-  // 获取新闻咨询 
-  getNews = async () => {
-    const { status, data } = await getNews();
-    if (status === 200) {
-      this.setState({
-        news: data
-      })
-    }
-  }
 
 
   // 渲染轮播图组件
@@ -138,9 +122,68 @@ class Index extends Component {
     ))
   }
 
+  // 顶部导航栏
+  renderTopNav = () => {
+    const { push } = this.props.history;
+    return (
+      <Flex justify="around" className="topNav">
+        <div className="searchBox">
+          <div onClick={() => {
+            push('/cityList')
+          }} className="city">
+            北京<i className="iconfont icon-arrow" />
+          </div>
+          <SearchBar
+            value={this.state.keyword}
+            onChange={(v) => this.setState({ keyword: v })}
+            placeholder="请输入小区或地址"
+          />
+        </div>
+        <div className="map" onClick={() => {
+          push('/map')
+        }}>
+          <i key="0" className="iconfont icon-map" />
+        </div>
+      </Flex>
+    )
+  }
+
+  // 渲染租房小组
+  renderGroup = () => {
+    return (
+      <>
+        {/* title */}
+        <Flex className="group-title" justify="between">
+          <h3>租房小组</h3>
+          <span>更多</span>
+        </Flex>
+        {/* 内容 */}
+        <Grid data={this.state.group}
+          columnNum={2}
+          hasLine={false}
+          square={false}
+          renderItem={item => (
+            // 自定义宫格结构和样式
+            <Flex className="grid-item" justify="between">
+              <div className="desc">
+                <h3>{item.title}</h3>
+                <p>{item.desc}</p>
+              </div>
+              <img src={`${BASE_URL}${item.imgSrc}`} alt="" />
+            </Flex>
+          )}
+        />
+      </>
+    )
+  }
+
   render() {
     return (
       <div className="indexBox">
+        {/* 顶部导航栏 */}
+        {
+          this.renderTopNav()
+        }
         {/* 轮播图 */}
         {
           this.renderCarousel()
@@ -151,27 +194,9 @@ class Index extends Component {
         }
         {/* 租房小组 */}
         <div className="group">
-          {/* title */}
-          <Flex className="group-title" justify="between">
-            <h3>租房小组</h3>
-            <span>更多</span>
-          </Flex>
-          {/* 内容 */}
-          <Grid data={this.state.group}
-            columnNum={2}
-            hasLine={false}
-            square={false}
-            renderItem={item => (
-              // 自定义宫格结构和样式
-              <Flex className="grid-item" justify="between">
-                <div className="desc">
-                  <h3>{item.title}</h3>
-                  <p>{item.desc}</p>
-                </div>
-                <img src={`${BASE_URL}${item.imgSrc}`} alt="" />
-              </Flex>
-            )}
-          />
+          {
+            this.renderGroup()
+          }
         </div>
 
         {/* 最新资讯 */}

@@ -24,6 +24,12 @@ li {
   list-style: none;
 }
 
+/* 设置容器高度 */
+#root,
+.app {
+  height: 100%;
+}
+
 * {
   touch-action: pan-y;
   box-sizing: border-box;
