@@ -19,6 +19,7 @@ class Map extends Component {
   /**
    * 1. 创建地图实例
    * 2. 设置地图显示的中心点
+   * 3. 地图初始化，同时设置地图展示级别
    */
   initMap = () => {
     // 解构BMap地图方法对象
