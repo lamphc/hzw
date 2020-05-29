@@ -10,6 +10,7 @@ import { getSwiper, getGroup, getNews } from '../../utils/api/home';
 // 导入样式
 import './index.scss'
 import Navs from '../../utils/navConf';
+import { getCurrCity } from '../../utils/api/city';
 
 
 class Index extends Component {
@@ -24,11 +25,19 @@ class Index extends Component {
     isPlay: false,
     // 搜索关键词
     keyword: '',
+    // 当前定位城市
+    currCity: {
+      // 城市名字
+      label: "--",
+      // 城市的ID
+      value: ""
+    },
     // 轮播图默认高度
     imgHeight: 212,
   }
   componentDidMount() {
     this.loadAll();
+    this.getCurCity()
   }
 
   // 获取首页所有接口数据
@@ -49,6 +58,28 @@ class Index extends Component {
       })
     }
 
+  }
+
+  // 定位当前城市
+  getCurCity = () => {
+    // 解构BMap地图方法对象
+    const { BMap } = window;
+    // 回调函数：获取数据
+    // 根据上网的IP，定位当前城市
+    // 初始化LocalCity=》定位实例
+    const myCity = new BMap.LocalCity();
+    myCity.get(async (result) => {
+      const cityName = result.name;
+      console.log("当前定位城市:" + cityName);
+      // 调用后台接口=》获取当前定位城市的详细信息
+      const { status, data } = await getCurrCity(cityName);
+      // console.log(res)
+      if (status === 200) {
+        this.setState({
+          currCity: data
+        })
+      }
+    });
   }
 
 
@@ -131,7 +162,7 @@ class Index extends Component {
           <div onClick={() => {
             push('/cityList')
           }} className="city">
-            北京<i className="iconfont icon-arrow" />
+            {this.state.currCity.label}<i className="iconfont icon-arrow" />
           </div>
           <SearchBar
             value={this.state.keyword}

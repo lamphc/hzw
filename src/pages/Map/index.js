@@ -28,7 +28,7 @@ class Map extends Component {
     const map = new BMap.Map("container");
     // 设置地图显示的中心点=>天安门
     const point = new BMap.Point(116.404, 39.915);
-    // 地图初始化，同时设置地图展示级别
+    // 地图初始化，同时设置地图展示级别（数值越大=》地图信息越详细）
     map.centerAndZoom(point, 15);
   }
 
