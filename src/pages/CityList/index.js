@@ -2,7 +2,15 @@
  * 城市列表
  */
 import React, { Component } from 'react';
-import { getCityList } from '../../utils/api/city';
+import { getCityList, getHotCity } from '../../utils/api/city';
+import { getCity } from '../../utils';
+// 列表组件
+import { List } from 'react-virtualized';
+
+
+// 列表假数据
+const list = Array.from(new Array(100)).map((item, index) => index);
+console.log(list)
 
 class CityList extends Component {
 
@@ -19,7 +27,19 @@ class CityList extends Component {
       console.log('所有城市数据：', data);
       const { cityList,
         cityIndex } = this.formatCities(data);
-      console.log('处理完的数据：', cityList, cityIndex)
+
+      // 获取热门城市数据 =》加到设计好的数据中
+      const { status: st, data: dt } = await getHotCity();
+      if (st === 200) {
+        cityList['hot'] = dt;
+        cityIndex.unshift('hot');
+      }
+      // 获取当前定位城市
+      let city = await getCity();
+      cityList['#'] = city;
+      cityIndex.unshift('#');
+      console.log('处理完的数据：', cityList, cityIndex);
+
     }
   }
 
@@ -56,10 +76,32 @@ class CityList extends Component {
 
   }
 
+  // 每行渲染的模版
+  rowRenderer = ({
+    key, // Unique key within array of rows
+    index, // Index of row within collection
+    isScrolling, // The List is currently being scrolled
+    isVisible, // This row is visible within the List (eg it is not an overscanned row)
+    style, // Style object to be applied to row (to position it)
+  }) => {
+    // row模版
+    return (
+      <div key={key} style={style}>
+        <h1>{list[index]}</h1>
+      </div>
+    );
+  }
+
   render() {
     return (
-      <div>
-        CityList
+      <div className="cityListBox">
+        <List
+          width={300}
+          height={300}
+          rowCount={list.length}
+          rowHeight={60}
+          rowRenderer={this.rowRenderer}
+        />
       </div>
     );
   }

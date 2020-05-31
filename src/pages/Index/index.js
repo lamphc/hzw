@@ -10,7 +10,8 @@ import { getSwiper, getGroup, getNews } from '../../utils/api/home';
 // 导入样式
 import './index.scss'
 import Navs from '../../utils/navConf';
-import { getCurrCity } from '../../utils/api/city';
+// 获取定位城市
+import { getCity } from '../../utils'
 
 
 class Index extends Component {
@@ -61,25 +62,11 @@ class Index extends Component {
   }
 
   // 定位当前城市
-  getCurCity = () => {
-    // 解构BMap地图方法对象
-    const { BMap } = window;
-    // 回调函数：获取数据
-    // 根据上网的IP，定位当前城市
-    // 初始化LocalCity=》定位实例
-    const myCity = new BMap.LocalCity();
-    myCity.get(async (result) => {
-      const cityName = result.name;
-      console.log("当前定位城市:" + cityName);
-      // 调用后台接口=》获取当前定位城市的详细信息
-      const { status, data } = await getCurrCity(cityName);
-      // console.log(res)
-      if (status === 200) {
-        this.setState({
-          currCity: data
-        })
-      }
-    });
+  getCurCity = async () => {
+    let res = await getCity();
+    this.setState({
+      currCity: res
+    })
   }
 
 
