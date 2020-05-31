@@ -3,16 +3,38 @@
  */
 import React, { Component } from 'react';
 import { getCityList, getHotCity } from '../../utils/api/city';
-import { getCity } from '../../utils';
+import { getCity, setLocalData, CURR_CITY } from '../../utils';
 // 列表组件
-import { List } from 'react-virtualized';
+import { List, AutoSizer } from 'react-virtualized';
 
+// 引入组件样式
+import './index.scss'
+import { NavBar, Icon, Toast } from 'antd-mobile';
 
 // 列表假数据
-const list = Array.from(new Array(100)).map((item, index) => index);
-console.log(list)
+// const list = Array.from(new Array(100)).map((item, index) => index);
+// console.log(list)
+
+// 子组件
+// const Fnc = (props) => {
+//   console.log(props)
+//   return (
+//     <div>
+//       <h2>函数子组件</h2>
+//       {props.children(10000)}
+//     </div>
+//   )
+// }
 
 class CityList extends Component {
+
+  // 定义状态数据
+  state = {
+    // 列表归类的类别
+    cityIndex: [],
+    // 归类的数据
+    cityList: {}
+  }
 
 
   componentDidMount() {
@@ -36,9 +58,15 @@ class CityList extends Component {
       }
       // 获取当前定位城市
       let city = await getCity();
-      cityList['#'] = city;
+      // 数据结构保持一致
+      cityList['#'] = [city];
       cityIndex.unshift('#');
       console.log('处理完的数据：', cityList, cityIndex);
+      // 做响应式
+      this.setState({
+        cityList,
+        cityIndex
+      })
 
     }
   }
@@ -76,6 +104,31 @@ class CityList extends Component {
 
   }
 
+  // 格式化title显示
+  formatTitle = (title) => {
+    switch (title) {
+      case '#': return '当前城市';
+      case 'hot': return '热门城市';
+      default: return title.toUpperCase()
+    }
+  }
+
+  // 切换定位城市事件函数
+  selCity = (item) => {
+    // 后台数据：只有北上广深是有数据的
+    const hasData = ['北京', '上海', '广州', '深圳'];
+    if (hasData.includes(item.label)) {
+      // 存在
+      // 更新本地定位数据
+      setLocalData(CURR_CITY, JSON.stringify(item))
+      // 返回首页
+      this.props.history.goBack()
+    } else {
+      // 不存在
+      Toast.fail('该城市暂无房源数据 !!!', 2);
+    }
+  }
+
   // 每行渲染的模版
   rowRenderer = ({
     key, // Unique key within array of rows
@@ -84,24 +137,63 @@ class CityList extends Component {
     isVisible, // This row is visible within the List (eg it is not an overscanned row)
     style, // Style object to be applied to row (to position it)
   }) => {
+    // 获取归类的数据，并渲染列表
+    const { cityIndex, cityList } = this.state;
+    // 列表下归类：title
+    const title = cityIndex[index];
+    // 对应title下的城市数据
+    const titleCity = cityList[title];
+    // console.log(title, titleCity)
     // row模版
     return (
-      <div key={key} style={style}>
-        <h1>{list[index]}</h1>
+      <div key={key} style={style} className="city-item">
+        <div className="title">{this.formatTitle(title)}</div>
+        {/* 归类城市小列表 */}
+        {/* <div className="name">安庆</div> */}
+        {
+          titleCity.map((item) => <div onClick={() => this.selCity(item)} key={item.value} className="name">{item.label}</div>)
+        }
       </div>
     );
+  }
+
+  // 动态计算row的高度
+  /**
+   * index：列表当前行的索引
+   */
+  execHeight = ({ index }) => {
+    // 获取归类的数据，并渲染列表
+    const { cityIndex, cityList } = this.state;
+    // 列表下归类：title
+    const title = cityIndex[index];
+    // 对应title下的城市数据
+    const titleCity = cityList[title];
+    return 36 + 50 * titleCity.length
   }
 
   render() {
     return (
       <div className="cityListBox">
-        <List
-          width={300}
-          height={300}
-          rowCount={list.length}
-          rowHeight={60}
-          rowRenderer={this.rowRenderer}
-        />
+        {/* 顶部导航 */}
+        <NavBar
+          mode="dark"
+          icon={<Icon type="left" />}
+          onLeftClick={() => this.props.history.goBack()}
+        >城市选择</NavBar>
+        {/* <Fnc a={123}>{(num) => <h1>{num}</h1>}</Fnc> */}
+        {/* 城市列表 */}
+        <AutoSizer>
+          {({ height, width }) => (
+            <List
+              className='listBox'
+              width={width}
+              height={height}
+              rowCount={this.state.cityIndex.length}
+              rowHeight={this.execHeight}
+              rowRenderer={this.rowRenderer}
+            />
+          )}
+        </AutoSizer>
       </div>
     );
   }

@@ -63,6 +63,8 @@ export function getCity() {
   }
 }
 
+export { CURR_CITY }
+
 /**
  * 前端本地存储有哪些方式？这些方式有什么不同？
  * 1. localStorage：* 一直存在（除非用户手动清除）* 5M
