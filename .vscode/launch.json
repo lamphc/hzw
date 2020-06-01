@@ -1,0 +1,15 @@
+{
+  // 使用 IntelliSense 了解相关属性。
+  // 悬停以查看现有属性的描述。
+  // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome", // 调试类型：基于浏览器的
+      "request": "launch",
+      "name": "好租网",
+      "url": "http://localhost:3000", // 要调试的程序服务地址
+      "webRoot": "${workspaceFolder}" // 默认指向项目根目录
+    }
+  ]
+}

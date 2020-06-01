@@ -33,7 +33,10 @@ class CityList extends Component {
     // 列表归类的类别
     cityIndex: [],
     // 归类的数据
-    cityList: {}
+    cityList: {},
+    // 滚动到当前行的索引值
+    activeIndex: 0
+
   }
 
 
@@ -105,10 +108,10 @@ class CityList extends Component {
   }
 
   // 格式化title显示
-  formatTitle = (title) => {
+  formatTitle = (title, isRight) => {
     switch (title) {
-      case '#': return '当前城市';
-      case 'hot': return '热门城市';
+      case '#': return isRight ? '当' : '当前城市';
+      case 'hot': return isRight ? '热' : '热门城市';
       default: return title.toUpperCase()
     }
   }
@@ -171,6 +174,39 @@ class CityList extends Component {
     return 36 + 50 * titleCity.length
   }
 
+  // 渲染右侧索引
+  renderCityIndex = () => {
+    const { cityIndex, activeIndex } = this.state;
+    return cityIndex.map((item, index) => {
+      return (
+        <li
+          key={item}
+          className="city-index-item"
+          onClick={() => {
+            //断点
+            // debugger
+            // console.log(this.listRef)
+            this.listRef.scrollToRow(index);
+          }}
+        >
+          <span className={activeIndex === index ? 'index-active' : ''}>
+            {this.formatTitle(item, true)}
+          </span>
+        </li>
+      )
+    })
+  }
+  // 每次列表重新渲染都会执行
+  // startIndex: 当前用户滚动到哪一行的row:index
+  onRowsRendered = ({ startIndex }) => {
+    if (startIndex !== this.state.activeIndex) {
+      // console.log('onRowsRendered', startIndex)
+      this.setState({
+        activeIndex: startIndex
+      })
+    }
+  }
+
   render() {
     return (
       <div className="cityListBox">
@@ -185,6 +221,10 @@ class CityList extends Component {
         <AutoSizer>
           {({ height, width }) => (
             <List
+              // ref: 获取组件实例
+              ref={(ele) => this.listRef = ele}
+              scrollToAlignment="start"
+              onRowsRendered={this.onRowsRendered}
               className='listBox'
               width={width}
               height={height}
@@ -194,6 +234,10 @@ class CityList extends Component {
             />
           )}
         </AutoSizer>
+        {/* 右侧索引列表 */}
+        <ul className="city-index">
+          {this.renderCityIndex()}
+        </ul>
       </div>
     );
   }

@@ -44,7 +44,7 @@ class Index extends Component {
   // 获取首页所有接口数据
   loadAll = async () => {
     const [swiper, group, news] = await Promise.all([getSwiper(), getGroup(), getNews()]);
-    console.log('1. 获取首页所有接口数据', swiper, group, news)
+    // console.log('1. 获取首页所有接口数据', swiper, group, news)
     // 2. 批量做响应式
     if (swiper.status === 200) {
       this.setState({
