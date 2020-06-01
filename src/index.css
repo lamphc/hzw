@@ -30,6 +30,10 @@ li {
   height: 100%;
 }
 
+.test {
+  color: orange;
+}
+
 * {
   touch-action: pan-y;
   box-sizing: border-box;
