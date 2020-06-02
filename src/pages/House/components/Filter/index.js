@@ -17,6 +17,15 @@ const titleSelectedStatus = {
   price: false,
   more: false,
 }
+
+// 筛选器当前选中的值(默认值)
+const selectedVal = {
+  area: ['area', 'null'],
+  mode: ['null'],
+  price: ['null'],
+  more: [],
+}
+
 export default class Filter extends Component {
 
   // 定义状态数据
@@ -26,6 +35,9 @@ export default class Filter extends Component {
     // 当前点击的过滤器title的type
     openType: ''
   }
+
+  // 当前选中的筛选器条件
+  selectedVals = { ...selectedVal }
 
   componentDidMount() {
     this.getFilters()
@@ -62,16 +74,50 @@ export default class Filter extends Component {
   }
 
   // 确定的时候=》关闭前三个菜单的内容和获取选择的数据
-  onOk = () => {
+  onOk = (selectedVal) => {
+    console.log('当前筛选器选中条件：', selectedVal)
+    // 存储当前选中的值
+    const { openType } = this.state;
+    this.selectedVals[openType] = selectedVal;
+    console.log('当前选中的筛选器条件:', this.selectedVals)
     this.setState({
-      openType: ''
+      openType: '',
+      // 处理筛选器是否有选中数据的高亮状态
+      titleSelectedStatus: this.handlerSel()
     })
   }
   // 取消的时候=》关闭前三个菜单的内容
   onCancel = () => {
     this.setState({
-      openType: ''
+      openType: '',
+      // 处理筛选器是否有选中数据的高亮状态
+      titleSelectedStatus: this.handlerSel()
     })
+  }
+
+  // 处理筛选条件是否有选中值的高亮状态
+  handlerSel = () => {
+    // 新的高亮状态
+    const newStatus = {};
+    // 遍历存储的筛选条件数据
+    Object.keys(this.selectedVals).forEach((item) => {
+      // 获取对应筛选条件数据
+      const cur = this.selectedVals[item];
+      // 判断是否有选中的值
+      if (item === 'area' && (cur[1] !== "null" || cur[0] === 'subway')) {
+        newStatus[item] = true
+      } else if (item === 'mode' && cur[0] !== 'null') {
+        newStatus[item] = true
+      } else if (item === 'price' && cur[0] !== 'null') {
+        newStatus[item] = true
+      } else if (item === 'more') {
+        // more：最后处理
+        newStatus[item] = false
+      } else {
+        newStatus[item] = false
+      }
+    })
+    return newStatus;
   }
 
   // 渲染前三个筛选器的方法
@@ -93,6 +139,8 @@ export default class Filter extends Component {
       const { openType } = this.state;
       // picker的数据源
       let data, col = 1;
+      // 获取当前点击picker上一次选择的值
+      let lastSel = this.selectedVals[openType];
       switch (openType) {
         case 'area': data = [area, subway]; col = 3;
           break;
@@ -102,10 +150,24 @@ export default class Filter extends Component {
           break;
       }
       return (
-        <FilterPicker data={data} col={col} onCancel={this.onCancel} onOk={this.onOk} />
+        <FilterPicker key={openType} data={data} value={lastSel} col={col} onCancel={this.onCancel} onOk={this.onOk} />
       )
     }
     return null
+  }
+
+  // 渲染第四个筛选器
+  renderMore = () => {
+    const { openType } = this.state;
+    if (openType === 'more') {
+      // 获取more筛选器的数据
+      const { characteristic, oriented, roomType, floor } = this.filterDatas;
+      let data = { characteristic, oriented, roomType, floor };
+      return (
+        <FilterMore data={data} onCancel={this.onCancel} onOk={this.onOk} />
+      )
+    }
+
   }
 
   render() {
@@ -126,7 +188,7 @@ export default class Filter extends Component {
           }
 
           {/* 最后一个菜单对应的内容： */}
-          {/* <FilterMore /> */}
+          {this.renderMore()}
         </div>
       </div>
     )
