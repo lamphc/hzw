@@ -93,8 +93,16 @@ export default class FilterPicker extends Component {
     console.log('初始化constructor()/只执行一次')
   }
 
+  s = this.props.value;
+
   state = {
     value: this.props.value
+  }
+
+  componentWillUnmount = () => {
+    this.setState = (state, callback) => {
+      return;
+    };
   }
 
   render() {
