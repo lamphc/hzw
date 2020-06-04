@@ -24,4 +24,9 @@ export function getListByFilters(cityId, filters, start = 1, end = 20) {
   })
 }
 
+// 根据房源ID获取对应房源到详情数据
+export function getDetailById(id) {
+  return http.get(`/houses/${id}`)
+}
+
 
