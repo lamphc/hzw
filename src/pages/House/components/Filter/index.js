@@ -73,6 +73,34 @@ export default class Filter extends Component {
     return openType === 'area' || openType === 'mode' || openType === 'price'
   }
 
+  // 处理列表接口需要的数据格式（后台）
+  handlerFilterData = () => {
+    // 获取存储的筛选器条件数据
+    const { area, mode, price, more } = this.selectedVals;
+    // 定一个变量：存储处理的数据
+    const filterData = {};
+    // 处理第一个筛选器
+    let akey = area[0], aval;
+    // 根据数组长度处理
+    if (area.length === 2) {
+      aval = area[1]
+    } else {
+      if (area[2] === 'null') {
+        // 第三个没选择条件
+        aval = area[1]
+      } else {
+        aval = area[2]
+      }
+    }
+    filterData[akey] = aval;
+    filterData.rentType = mode[0];
+    filterData.price = price[0];
+    // more
+    filterData.more = more.join(',')
+    // 返回处理完的数据
+    return filterData
+  }
+
   // 确定的时候=》关闭前三个菜单的内容和获取选择的数据
   onOk = (selectedVal) => {
     console.log('当前筛选器选中条件：', selectedVal)
@@ -84,6 +112,10 @@ export default class Filter extends Component {
       openType: '',
       // 处理筛选器是否有选中数据的高亮状态
       titleSelectedStatus: this.handlerSel()
+    }, () => {
+      // 处理调用后台接口需要的数据
+      // 调用父组件的方法=》传递筛选器条件数据
+      this.props.onFilter(this.handlerFilterData())
     })
   }
   // 取消的时候=》关闭前三个菜单的内容
@@ -110,9 +142,9 @@ export default class Filter extends Component {
         newStatus[item] = true
       } else if (item === 'price' && cur[0] !== 'null') {
         newStatus[item] = true
-      } else if (item === 'more') {
+      } else if (item === 'more' && cur.length) {
         // more：最后处理
-        newStatus[item] = false
+        newStatus[item] = true
       } else {
         newStatus[item] = false
       }
@@ -164,7 +196,7 @@ export default class Filter extends Component {
       const { characteristic, oriented, roomType, floor } = this.filterDatas;
       let data = { characteristic, oriented, roomType, floor };
       return (
-        <FilterMore data={data} onCancel={this.onCancel} onOk={this.onOk} />
+        <FilterMore data={data} value={this.selectedVals[openType]} onCancel={this.onCancel} onOk={this.onOk} />
       )
     }
 

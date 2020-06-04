@@ -9,7 +9,7 @@ export default class FilterMore extends Component {
   // 设置状态数据
   state = {
     // 当前选中的所有条件
-    selected: []
+    selected: this.props.value
   }
 
   // 存储选中的条件：之前选择过，就删除/相反，就添加
