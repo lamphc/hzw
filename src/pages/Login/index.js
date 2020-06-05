@@ -8,10 +8,11 @@ import { login } from '../../utils/api/user'
 import { setLocalData, HZW_TOKEN } from '../../utils'
 
 import { withFormik } from 'formik';
+import * as yup from 'yup';
 
 // 验证规则：
-// const REG_UNAME = /^[a-zA-Z_\d]{5,8}$/
-// const REG_PWD = /^[a-zA-Z_\d]{5,12}$/
+const REG_UNAME = /^[a-zA-Z_\d]{5,8}$/
+const REG_PWD = /^[a-zA-Z_\d]{5,12}$/
 
 // 受控组件（v-model=>双向绑定）：1. 表单元素的value绑定状态数据 2. 添加onChange事件做响应式
 
@@ -25,7 +26,7 @@ class Login extends Component {
       handleBlur,
       handleSubmit,
     } = this.props;
-    // console.log(this.props)
+    // console.log(errors)
     return (
       <div className={styles.root}>
         {/* 顶部导航 */}
@@ -47,7 +48,7 @@ class Login extends Component {
               />
             </div>
             {/* 长度为5到8位，只能出现数字、字母、下划线 */}
-            {/* <div className={styles.error}>账号为必填项</div> */}
+            <div className={styles.error}>{errors.username}</div>
             <div className={styles.formItem}>
               <input
                 value={values.password}
@@ -59,7 +60,7 @@ class Login extends Component {
               />
             </div>
             {/* 长度为5到12位，只能出现数字、字母、下划线 */}
-            {/* <div className={styles.error}>账号为必填项</div> */}
+            <div className={styles.error}>{errors.password}</div>
             <div className={styles.formSubmit}>
               <button className={styles.submit} type="submit">
                 登 录
@@ -84,16 +85,11 @@ const MyLogin = withFormik({
   // 双向绑定
   mapPropsToValues: () => ({ username: '', password: '' }),
 
-  // Custom sync validation
-  // validate: values => {
-  //   const errors = {};
-
-  //   if (!values.name) {
-  //     errors.name = 'Required';
-  //   }
-
-  //   return errors;
-  // },
+  // 做校验
+  validationSchema: yup.object().shape({
+    username: yup.string().required('用户名必填！').matches(REG_UNAME, '长度为5到8位，只能出现数字、字母、下划线!'),
+    password: yup.string().required('密码必填！').matches(REG_PWD, '长度为5到12位，只能出现数字、字母、下划线!')
+  }),
 
   // 提交
   handleSubmit: async (values, { props, setValues }) => {
@@ -112,9 +108,7 @@ const MyLogin = withFormik({
       Toast.fail(description, 2);
       setValues({ username: '', password: '' })
     }
-  },
-
-  displayName: 'BasicForm',
+  }
 })(Login);
 
 export default MyLogin
