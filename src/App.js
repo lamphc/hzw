@@ -7,6 +7,7 @@ import CityList from './pages/CityList';
 import Map from './pages/Map';
 import NotFound from './pages/NotFound';
 import HouseDetail from './components/HouseDetail';
+import Login from './pages/Login';
 
 
 
@@ -24,6 +25,8 @@ function App() {
           <Route path='/cityList' component={CityList} />
           {/* 地图找房 */}
           <Route path='/map' component={Map} />
+          {/*  登录 */}
+          <Route path='/login' component={Login} />
           {/* 房源详情 */}
           <Route path="/detail/:id" component={HouseDetail} />
           {/* 404页面 */}

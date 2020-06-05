@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^7.2.1",
     "antd-mobile": "^2.3.3",
     "axios": "^0.19.2",
+    "formik": "^2.1.4",
     "node-sass": "^4.14.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

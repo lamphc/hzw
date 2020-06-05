@@ -4,7 +4,8 @@
 import { getCurrCity } from './api/city';
 
 
-
+// 定义token=》key
+const HZW_TOKEN = 'hzw_token';
 
 // 封装本地存储方法
 // 存储本地数据
@@ -63,7 +64,7 @@ export function getCity() {
   }
 }
 
-export { CURR_CITY }
+export { CURR_CITY, HZW_TOKEN }
 
 /**
  * 前端本地存储有哪些方式？这些方式有什么不同？
