@@ -94,7 +94,9 @@ export default class HouseDetail extends Component {
     },
 
     // 表示房源是否收藏
-    isFavorite: false
+    isFavorite: false,
+    // 轮播图默认高度
+    imgHeight: 252,
   }
 
   componentDidMount() {
@@ -155,8 +157,17 @@ export default class HouseDetail extends Component {
     } = this.state
 
     return houseImg.map(item => (
-      <a key={item} href="http://itcast.cn">
-        <img src={BASE_URL + item} alt="" />
+      <a key={item} href="http://itcast.cn" style={{ display: 'inline-block', width: '100%', background: 'gray', height: this.state.imgHeight }}
+      >
+        <img src={BASE_URL + item}
+          style={{ width: '100%', verticalAlign: 'top' }}
+          onLoad={() => {
+            // fire window resize event to change height
+            // 触发了一个自适应高度的事件
+            window.dispatchEvent(new Event('resize'));
+            this.setState({ imgHeight: 'auto' });
+          }}
+          alt="" />
       </a>
     ))
   }
