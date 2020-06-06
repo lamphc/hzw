@@ -7,3 +7,13 @@ import http from "../axios";
 export function login(data) {
   return http.post('/user/login', data)
 }
+
+// 登录当前登录人信息
+export function getUser() {
+  return http.get('/user')
+}
+
+// 退出登录
+export function logout() {
+  return http.post('/user/logout')
+}

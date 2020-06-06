@@ -4,6 +4,7 @@
 
 import axios from 'axios'
 import { Toast } from 'antd-mobile';
+import { getToken } from '.';
 // loading效果组件
 
 // 请求基础地址
@@ -20,6 +21,15 @@ myAxios.interceptors.request.use(function (config) {
   // Do something before request is sent
   // console.log('请求之前触发', config)
   // loading
+  /**
+   * 给需要在headers添加token接口
+   */
+  const { url, headers } = config, whiteList = ['/user/registered', '/user/login'];
+  if (url.startsWith('/user') && !whiteList.includes(url)) {
+    // 向headers里边加token验证
+    headers.authorization = getToken()
+  }
+
   Toast.loading('加载中...', 0);
   return config;
 }, function (error) {

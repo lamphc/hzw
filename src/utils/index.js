@@ -6,6 +6,23 @@ import { getCurrCity } from './api/city';
 
 // 定义token=》key
 const HZW_TOKEN = 'hzw_token';
+// 封装token相关方法
+export function setToken(token) {
+  setLocalData(HZW_TOKEN, token)
+}
+
+export function getToken() {
+  return getLocalData(HZW_TOKEN)
+}
+
+export function delToken() {
+  delLocalData(HZW_TOKEN)
+}
+// 判断是否登录
+export function isAuth() {
+  return !!getToken()
+}
+
 
 // 封装本地存储方法
 // 存储本地数据
