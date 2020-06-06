@@ -108,10 +108,10 @@ export default class Profile extends Component {
           {/* 登录人信息 */}
           <div className={styles.info}>
             <div className={styles.myIcon}>
-              <img className={styles.avatar} src={userInfo?.avatar || DEFAULT_AVATAR} alt="icon" />
+              <img className={styles.avatar} src={userInfo?.avatar ?? DEFAULT_AVATAR} alt="icon" />
             </div>
             <div className={styles.user}>
-              <div className={styles.name}>{userInfo?.nickname || '游客'}</div>
+              <div className={styles.name}>{userInfo?.nickname ?? '游客'}</div>
               {/* 登录后展示： */}
               {
                 isLogin && <>

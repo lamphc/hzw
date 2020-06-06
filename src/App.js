@@ -8,6 +8,9 @@ import Map from './pages/Map';
 import NotFound from './pages/NotFound';
 import HouseDetail from './components/HouseDetail';
 import Login from './pages/Login';
+import Rent from './pages/Rent';
+import RentAdd from './pages/Rent/Add';
+import Search from './pages/Rent/Search';
 
 
 
@@ -29,6 +32,13 @@ function App() {
           <Route path='/login' component={Login} />
           {/* 房源详情 */}
           <Route path="/detail/:id" component={HouseDetail} />
+          {/* 发布房源 */}
+          {/* 已发布房源的列表 */}
+          <Route path="/rent" exact component={Rent} />
+          {/* 发布房源页面 */}
+          <Route path="/rent/add" component={RentAdd} />
+          {/* 发布房源搜索=》当前发布房源的小区 */}
+          <Route path="/rent/search" component={Search} />
           {/* 404页面 */}
           <Route component={NotFound} />
         </Switch>

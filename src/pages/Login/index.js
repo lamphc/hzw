@@ -27,6 +27,7 @@ class Login extends Component {
       handleSubmit,
     } = this.props;
     // console.log(errors)
+    // console.log(this.props.location)
     return (
       <div className={styles.root}>
         {/* 顶部导航 */}
@@ -102,8 +103,12 @@ const MyLogin = withFormik({
       // 登录成功
       // 1. 本地存储token
       setLocalData(HZW_TOKEN, data.token)
-      // 2. 路由跳转=》个人中心
-      props.history.push('/home/profile')
+      // 2. 路由跳转=》* 如果存在backUrl,就跳转到backUrl * 不存在跳到个人中心
+      if (props.location.backUrl) {
+        props.history.replace(props.location.backUrl)
+      } else {
+        props.history.push('/home/profile')
+      }
     } else {
       Toast.fail(description, 2);
       setValues({ username: '', password: '' })

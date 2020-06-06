@@ -25,3 +25,13 @@ export function getCityList(level = 1) {
 export function getHotCity() {
   return http.get('/area/hot')
 }
+
+
+// 根据当前城市ID和关键词查询小区
+export function getCommunityByKey(id, name) {
+  return http.get('/area/community', {
+    params: {
+      id, name
+    }
+  })
+}

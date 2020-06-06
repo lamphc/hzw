@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
 import { Carousel, Flex, Modal, Toast, NavBar, Icon } from 'antd-mobile'
-import axios from 'axios'
+// import axios from 'axios'
 import HouseItem from '../HouseItem'
 import styles from './index.module.css'
 import HousePackage from '../HousePackage'
 import { BASE_URL } from '../../utils/axios'
 import { getDetailById } from '../../utils/api/house'
+import { checkFavById, delFav, addFav } from '../../utils/api/user'
+import { isAuth } from '../../utils'
 
 // 猜你喜欢
 const recommendHouses = [
@@ -105,7 +107,22 @@ export default class HouseDetail extends Component {
     // console.log(this.props)
 
     // 获取房屋数据
-    this.getHouseDetail()
+    this.getHouseDetail();
+    this.checkFav()
+  }
+
+
+  // 页面加载时候：如果用户登录了=》查询下当前房源是否收藏过
+  checkFav = async () => {
+    if (!isAuth()) return;
+    const { id } = this.props.match.params;
+    const { status, data } = await checkFavById(id);
+    if (status === 200) {
+      // 根据返回的状态，激活按钮
+      this.setState({
+        isFavorite: data.isFavorite
+      })
+    }
   }
 
   /* 
@@ -129,6 +146,48 @@ export default class HouseDetail extends Component {
         }
       ])
     */
+
+  handleFavorite = async () => {
+    if (!isAuth()) {
+      // 没有登录=》不能收藏 =》登录后可以
+      alert('提示', '您没有登录，登录后才能收藏，是否去登录？', [
+        { text: '取消' },
+        {
+          text: '确定',
+          onPress: async () => {
+            // 去登录 =》 登录成功后 =》 跳回之前浏览的页面(需要传递当前页面的路径)
+            this.props.history.replace({ pathname: '/login', backUrl: this.props.location.pathname })
+          }
+        }
+      ])
+    } else {
+      // 登录
+      //  6 根据 isFavorite 判断，当前房源是否收藏。
+      //  7 如果未收藏，就调用添加收藏接口，添加收藏。
+      //  8 如果已收藏，就调用删除收藏接口，去除收藏
+      const { isFavorite } = this.state;
+      const { id } = this.props.match.params
+      if (isFavorite) {
+        // 收藏过，就删除收藏
+        const { status, description } = await delFav(id)
+        if (status === 200) {
+          Toast.success(description, 2)
+          this.setState({
+            isFavorite: false
+          })
+        }
+      } else {
+        const { status, description } = await addFav(id);
+        // debugger
+        if (status === 200) {
+          Toast.success(description, 2)
+          this.setState({
+            isFavorite: true
+          })
+        }
+      }
+    }
+  }
 
   // 获取房屋详细信息
   async getHouseDetail() {
