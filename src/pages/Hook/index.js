@@ -11,7 +11,7 @@ const MenuTree = () => {
     {
       id: '1',
       name: "tree1",
-      isOpen: true,
+      isOpen: false,
       child: [
         {
           id: '1-1', name: 'ss', isOpen: true, child: [{
@@ -97,7 +97,14 @@ const Fnc = () => {
       <p>通过hook拿到共享数据：{shareVal}</p>
       <hr />
       <MenuTree />
-
+      <div style={{ fontSize: '64px' }}>
+        {/* <p style={{ width: '10rem', background: 'orange' }}>123em</p> */}
+        <p style={{ fontSize: '1rem', width: '1rem', background: 'orange' }}>2rem</p>
+        <p style={{ fontSize: '2rem', width: '2rem', background: 'orange' }}>4rem</p>
+        <p style={{ fontSize: '3rem', width: '3rem', background: 'orange' }}>1rem</p>
+        <p style={{ fontSize: '64px' }}>1rem</p>
+        <p style={{ fontSize: 32 / 64 + 'rem' }}>8rem</p>
+      </div>
     </div>
   )
 }
@@ -117,6 +124,20 @@ const useCounter = () => {
   return [count, setCount]
 }
 
+/* rem.js文件内容 */
+function RemLoader() {
+  var html = document.documentElement;
+
+  function onWindowResize() {
+    html.style.fontSize = html.getBoundingClientRect().width * window.devicePixelRatio / 100 * 10 + 'px';
+    // html.style.fontSize = '1rem'
+    console.log('dpr:', window.devicePixelRatio)
+  }
+
+  window.addEventListener('resize', onWindowResize);
+  onWindowResize();
+}
+
 function Hook(props) {
   // 设置状态数据
   let [count, setCount] = useState(0);
@@ -129,8 +150,9 @@ function Hook(props) {
 
   // 钩子函数
   useEffect(() => {
-    console.log('加载了｜更新｜卸载！')
+    console.log('加载了｜更新｜卸载！', window.screen.width);
     // fetch
+    RemLoader()
   }, [])
 
   useEffect(() => {
