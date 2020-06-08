@@ -29,4 +29,9 @@ export function getDetailById(id) {
   return http.get(`/houses/${id}`)
 }
 
+// 图片上传
+export function uploadImg(fm) {
+  return http.post('/houses/image', fm)
+}
+
 
