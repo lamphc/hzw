@@ -1,0 +1,11 @@
+.menux li {
+  margin-left: 10px;
+}
+
+.menux .par {
+  display: inline-block;
+  cursor: pointer;
+  background: orange;
+  padding: 2px;
+  margin: 2px 0;
+}

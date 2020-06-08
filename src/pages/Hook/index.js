@@ -1,12 +1,93 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 
-
+import './index.css'
 let MyContext = React.createContext();
 
 
+
+// 递归渲染树菜单
+const MenuTree = () => {
+  const data = [
+    {
+      id: '1',
+      name: "tree1",
+      isOpen: true,
+      child: [
+        {
+          id: '1-1', name: 'ss', isOpen: true, child: [{
+            id: '1-1-1',
+            name: "tree",
+          },
+          {
+            id: '1-1-2',
+            name: "tree",
+          }
+          ]
+        },
+        {
+          id: '1-2', name: 'ss', isOpen: true, child: [{
+            id: '1-2-1',
+            name: "tree",
+          },
+          {
+            id: '1-2-2',
+            name: "tree",
+          }
+          ]
+        },
+        { id: '1-3', name: 'ss', },
+      ],
+    },
+    {
+      id: '2',
+      name: "tree2",
+      isOpen: true,
+      child: [
+        { id: '2-1', name: 'ss', },
+        { id: '2-2', name: 'ss', },
+      ],
+    },
+  ];
+  const [menu, setMenu] = useState(data);
+
+  // 递归渲染
+  const renderTree = (arr) => {
+    return arr.map((item) => {
+      return (
+        <li key={item.id}>
+          <a onClick={() => {
+            // 控制折叠
+            // 判断是父级
+            if (item.child && item.child.length) {
+              item.isOpen = !item.isOpen
+              setMenu(menu)
+            }
+          }} className={item.child && item.child.length && 'par'}>{item.name}</a>
+          {
+            item.child && item.child.length && <ul style={{ display: item.isOpen ? 'block' : 'none' }}>
+              {
+                renderTree(item.child)
+              }
+            </ul>
+          }
+
+        </li>
+      )
+
+    })
+  }
+
+  return (
+    <ul className="menux">
+      {
+        renderTree(menu)
+      }
+    </ul>
+  )
+}
+
 // 子组件
 const Fnc = () => {
-
   const shareVal = useContext(MyContext);
 
   return (
@@ -14,6 +95,9 @@ const Fnc = () => {
       <h2>函数子组件</h2>
       <MyContext.Consumer>{(v) => <p>{v}</p>}</MyContext.Consumer>
       <p>通过hook拿到共享数据：{shareVal}</p>
+      <hr />
+      <MenuTree />
+
     </div>
   )
 }
