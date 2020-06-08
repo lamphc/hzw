@@ -11,16 +11,20 @@ import './index.css'
 import Index from '../Index';
 import House from '../House';
 import Profile from '../Profile';
+import Hook from '../Hook';
 // 定义tabBar的数据结构：
 import tabItemData from '../../utils/tabBarConf';
 
 // 渲染=>标签页组件
 class Home extends Component {
 
+
+
   state = {
     // 当前标签栏选中是谁？=> 当前页面path
     selectedTab: this.props.location.pathname
   }
+
 
 
   // 渲染tabBar组件方法
@@ -70,6 +74,8 @@ class Home extends Component {
         <Route path='/home/house' component={House} />
         {/* 个人中心 */}
         <Route path='/home/profile' component={Profile} />
+        {/* 体验Hook */}
+        <Route path='/home/hook' component={Hook} />
 
         {/* 标签页组件 =》 复用 */}
         <div className='tabBox'>

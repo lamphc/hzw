@@ -16,6 +16,11 @@ const tabItemData = [
     title: '我的',
     icon: 'icon-my',
     path: '/home/profile'
+  },
+  {
+    title: 'Hook',
+    icon: 'icon-my',
+    path: '/home/hook'
   }
 ]
 
