@@ -35,3 +35,13 @@ export function getCommunityByKey(id, name) {
     }
   })
 }
+
+
+// 根据区域ID查询地图覆盖物的数据
+export function getMapData(id) {
+  return http.get('/area/map', {
+    params: {
+      id
+    }
+  })
+}
