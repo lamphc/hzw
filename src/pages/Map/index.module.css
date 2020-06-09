@@ -1,0 +1,39 @@
+.mapBox {
+  height: 100%;
+}
+
+:global(#container) {
+  height: calc(100% - 45px);
+}
+
+/* .circle {
+  width: 100px;
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+  border-radius: 100px;
+  background: #fd1800;
+  color: #fff;
+} */
+
+/* 覆盖物样式 */
+.bubble {
+  width: 70px;
+  height: 70px;
+  line-height: 1;
+  display: inline-block;
+  position: absolute;
+  border-radius: 100%;
+  background: rgba(12, 181, 106, 0.9);
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  text-align: center;
+  cursor: pointer;
+  /* 覆盖物以点为中心 */
+  left: -35px;
+  top: -35px;
+}
+
+.bubbleName {
+  padding: 18px 0 6px 0;
+}
