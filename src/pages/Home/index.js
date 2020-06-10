@@ -1,7 +1,7 @@
 /**
  * 首页
  */
-import React, { Component } from 'react';
+import React, { Component, lazy } from 'react';
 import { Route } from 'react-router-dom';
 import { TabBar } from 'antd-mobile';
 // 引入样式
@@ -9,11 +9,16 @@ import './index.css'
 
 // 二级路由页面
 import Index from '../Index';
-import House from '../House';
-import Profile from '../Profile';
+
+// import House from '../House';
+// import Profile from '../Profile';
 import Hook from '../Hook';
 // 定义tabBar的数据结构：
 import tabItemData from '../../utils/tabBarConf';
+
+const House = lazy(() => import('../House'));
+const Profile = lazy(() => import('../Profile'));
+
 
 // 渲染=>标签页组件
 class Home extends Component {
