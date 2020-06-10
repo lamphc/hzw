@@ -7,8 +7,18 @@ import { getCity } from '../../utils';
 
 import sty from './index.module.css'
 import { getMapData } from '../../utils/api/city';
+import { getListByFilters } from '../../utils/api/house';
+import HouseItem from '../../components/HouseItem';
+import { BASE_URL } from '../../utils/axios';
 
 class Map extends Component {
+
+  state = {
+    // 当前点击小区的房源列表
+    list: [],
+    // 控制房源列表浮层是否显示
+    isShowList: false
+  }
 
   componentDidMount() {
     // 初始化百度地图
@@ -46,6 +56,18 @@ class Map extends Component {
       }
     },
       label);
+
+    // 给地图添加事件
+    // movestart事件开始移动触发（一次）
+    this.map.addEventListener('movestart', (e) => {
+      // 判断列表是否显示=》如果显示 =》就隐藏
+      const { isShowList } = this.state;
+      if (isShowList) {
+        this.setState({
+          isShowList: false
+        })
+      }
+    })
 
   }
 
@@ -100,10 +122,18 @@ class Map extends Component {
     } else {
       // 方形
       tpl = `
-      <p>${cname}</p> 
+      <div class="${sty.rect}">
+      <span class="${sty.housename}">${cname}</span>
+      <span class="${sty.housenum}">${count}套</span>
+      <i class="${sty.arrow}"></i>
+     </div>
       `;
       ecallback = (e) => {
-        console.log(e, cname)
+        // console.log(e, cname)
+        // 获取当前点击小区的房源列表数据，然后展示到地图中
+        this.handlerHouseList(value)
+        // 把当前点击的小区位移到中心点位置
+        this.moveToCenter(e)
       }
     }
     // 当前覆盖物的坐标点
@@ -152,6 +182,69 @@ class Map extends Component {
     }
   }
 
+  // 获取小区的出租房源列表
+  handlerHouseList = async (id) => {
+    // 把需要的列表数据从 对象 结构出来
+    const { status, data: { list } } = await getListByFilters(id);
+    if (status === 200) {
+      this.setState({
+        list,
+        isShowList: true
+      })
+    }
+
+  }
+  // 渲染小区下房屋列表
+  renderHouseList = () => {
+    return (
+      <div
+        className={[
+          sty.houseList,
+          this.state.isShowList ? sty.show : ''
+        ].join(' ')}
+      >
+        <div className={sty.titleWrap}>
+          <h1 className={sty.listTitle}>房屋列表</h1>
+          <a className={sty.titleMore} href="/home/house">
+            更多房源
+    </a>
+        </div>
+
+        <div className={sty.houseItems}>
+          {/* 房屋列表 */}
+          {
+            this.state.list.map(item => (
+              <HouseItem
+                onClick={() => this.props.history.push(`/detail/${item.houseCode}`)}
+                key={item.houseCode}
+                src={BASE_URL + item.houseImg}
+                title={item.title}
+                desc={item.desc}
+                tags={item.tags}
+                price={item.price}
+              />
+            ))
+          }
+        </div>
+      </div>
+    )
+  }
+
+  // 点击移动小区到中心点位置
+  moveToCenter = (e) => {
+    // 获取到当前点击到坐标点（位移开始）
+    const { clientX, clientY } = e.changedTouches[0];
+    // 中心点(可是区域的=》y轴排除列表高度)(终点)
+    let xc, yc;
+    xc = window.innerWidth / 2;
+    yc = (window.innerHeight - 330) / 2;
+    console.log('终点-开始：', xc, yc, clientX, clientY)
+    // 获取移动的距离（x,y）
+    let x = xc - clientX, y = yc - clientY;
+    // 调用百度地图提供的方法位移地图
+    this.map.panBy(x, y)
+  }
+
 
   render() {
     return (
@@ -164,6 +257,10 @@ class Map extends Component {
         >地图找房</NavBar>
         {/* 地图容器 */}
         <div id="container"></div>
+        {/* 渲染小区房源列表 */}
+        {
+          this.renderHouseList()
+        }
       </div>
     );
   }
